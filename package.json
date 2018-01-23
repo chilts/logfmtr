@@ -1,0 +1,28 @@
+{
+  "name": "logfmtr",
+  "version": "0.1.0",
+  "description": "Logger like bole but formats like logfmt.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "devDependencies": {
+    "tape": "^4.8.0"
+  },
+  "homepage": "https://github.com/chilts/logfmtr",
+  "bugs": {
+    "url": "https://github.com/chilts/logfmtr/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chilts/logfmtr.git"
+  },
+  "author": "Andrew Chilton",
+  "keywords": [
+    "log",
+    "logfmt",
+    "logger",
+    "logging"
+  ],
+  "license": "ISC"
+}
