@@ -1,7 +1,7 @@
 {
   "name": "logfmtr",
-  "version": "0.2.0",
-  "description": "Logger like bole but formats like logfmt. With express middleware.",
+  "version": "0.3.0",
+  "description": "Logger like bole but formats like logfmt. Comes with express middleware like morgan.",
   "main": "index.js",
   "scripts": {
     "test": "node test.js"
