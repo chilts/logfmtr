@@ -2,7 +2,6 @@
 
 // core
 const os = require('os')
-const util = require('util')
 
 // ----------------------------------------------------------------------------
 
@@ -29,41 +28,6 @@ function escape(val) {
   return val
 }
 
-// from bole
-function format(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) {
-  if (a16 !== undefined)
-    return util.format(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16)
-  if (a15 !== undefined)
-    return util.format(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15)
-  if (a14 !== undefined)
-    return util.format(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14)
-  if (a13 !== undefined)
-    return util.format(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13)
-  if (a12 !== undefined)
-    return util.format(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12)
-  if (a11 !== undefined)
-    return util.format(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11)
-  if (a10 !== undefined)
-    return util.format(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
-  if (a9 !== undefined)
-    return util.format(a1, a2, a3, a4, a5, a6, a7, a8, a9)
-  if (a8 !== undefined)
-    return util.format(a1, a2, a3, a4, a5, a6, a7, a8)
-  if (a7 !== undefined)
-    return util.format(a1, a2, a3, a4, a5, a6, a7)
-  if (a6 !== undefined)
-    return util.format(a1, a2, a3, a4, a5, a6)
-  if (a5 !== undefined)
-    return util.format(a1, a2, a3, a4, a5)
-  if (a4 !== undefined)
-    return util.format(a1, a2, a3, a4)
-  if (a3 !== undefined)
-    return util.format(a1, a2, a3)
-  if (a2 !== undefined)
-    return util.format(a1, a2)
-  return a1
-}
-
 // ----------------------------------------------------------------------------
 
 function LogFmtr(opts) {
@@ -80,27 +44,27 @@ function LogFmtr(opts) {
   this.fields = {}
 }
 
-LogFmtr.prototype.debug = function debug(inp, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) {
-  this.logit('debug', inp, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16)
+LogFmtr.prototype.debug = function debug(evt) {
+  this.logit('debug', evt)
 }
 
-LogFmtr.prototype.info = function info(inp, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) {
-  this.logit('info', inp, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16)
+LogFmtr.prototype.info = function info(evt) {
+  this.logit('info', evt)
 }
 
-LogFmtr.prototype.log = function log(inp, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) {
-  this.logit('info', inp, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16)
+LogFmtr.prototype.log = function log(evt) {
+  this.logit('info', evt)
 }
 
-LogFmtr.prototype.warn = function warn(inp, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) {
-  this.logit('warn', inp, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16)
+LogFmtr.prototype.warn = function warn(evt) {
+  this.logit('warn', evt)
 }
 
-LogFmtr.prototype.error = function error(inp, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) {
-  this.logit('error', inp, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16)
+LogFmtr.prototype.error = function error(evt) {
+  this.logit('error', evt)
 }
 
-LogFmtr.prototype.logit = function logit(lvl, inp, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) {
+LogFmtr.prototype.logit = function logit(lvl, evt) {
   let m = 'level=' + lvl
 
   if ( this.opts.ts ) {
@@ -112,7 +76,7 @@ LogFmtr.prototype.logit = function logit(lvl, inp, a2, a3, a4, a5, a6, a7, a8, a
     m += ' ' + f + '=' + escape(this.fields[f])
   }
 
-  m += ' msg=' + escape(format(inp, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16)) + '\n'
+  m += ' evt=' + escape(evt) + '\n'
 
   this.opts.stream.write(m)
 }
