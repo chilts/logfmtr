@@ -125,16 +125,6 @@ LogFmtr.prototype.withFields = function withFields(fields) {
   return logFmtr
 }
 
-LogFmtr.prototype.withReq = function withReq(req) {
-  return this.withFields({
-    method        : req.method,
-    url           : req.url,
-    headers       : JSON.stringify(req.headers),
-    remoteAddress : req.connection.remoteAddress,
-    remotePort    : req.connection.remotePort,
-  })
-}
-
 // convenience functions so you don't have to figure this out locally
 LogFmtr.prototype.pid = function pid() {
   return this.withFields({ pid : process.pid })

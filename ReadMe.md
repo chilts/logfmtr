@@ -36,58 +36,44 @@ newLog.log('Hi again')
 That's pretty much it. Soon to be added will be an equivalent of bole's request logger (to log incoming requests) and
 a logger similar to morgan (to log finalised requests with extra info).
 
-## In a Server Request ##
+## Express Middleware ##
 
-You can log some of the requests fields with `.withReq(req)`:
+Works like `morgan`, however this is fully integrated into a logger that you add to the incoming request.
+
+See the `examples/express.js` for more details.
+
+Essentially you just do the following:
 
 ```js
-const http = require('http')
+const express = require('express')
+const LogFmtr = require('logfmtr')
 
 const log = new LogFmtr()
 
-const server = http.createServer((req, res) => {
-  // create a new logger with a `Request ID` and some of the fields from the request
-  const reqLogger = log.withFields({ rid : String(Math.random()).substr(2) }).withReq(req)
-
-  reqLogger.info('New Request')
-
-  res.statusCode = 200
-  res.setHeader('Content-Type', 'text/plain')
-  res.end('Hello World\n')
-
-  reqLogger.info('Request Finished')
+const app = express()
+app.use((req, res, next) => {
+  req.log = log
+  next()
 })
 
-server.listen(port, hostname, () => {
-  log.info(`Server running at http://${hostname}:${port}/`)
+app.use(LogFmtr.middleware)
+```
+
+If you want a RequestID logged on every request change your middleware above:
+
+```js
+app.use((req, res, next) => {
+  // or use `https://npm.im/yid` or `https://npm.im/zid`
+  const rid = String(Math.random()).substr(2, 6)
+  req.log = log.withFields({ rid })
+  next()
 })
 ```
 
-Gives something like this (for one `curl localhost:3000`). Note: the 2nd two lines are split so it's easier to read in this file.
-
-```
-level=info ts=1517824170845 msg="Server running at http://127.0.0.1:3000/"
-
-level=info
-ts=1517824175239
-rid=8197861118413432
-method=GET
-url=/
-headers="{\"host\":\"localhost:3000\",\"user-agent\":\"curl/7.47.0\",\"accept\":\"*/*\"}"
-remoteAddress=127.0.0.1
-remotePort=52376
-msg="New Request"
-
-level=info
-ts=1517824175245
-rid=8197861118413432
-method=GET
-url=/
-headers="{\"host\":\"localhost:3000\",\"user-agent\":\"curl/7.47.0\",\"accept\":\"*/*\"}"
-remoteAddress=127.0.0.1
-remotePort=52376
-msg="Request Finished"
-```
+We log 4 events for you: Request Start, Response Start, Response End, Request End. This gives you fine grained info
+about exactly what is happening in your application. The Request Start logs info about the request. The Response Start
+logs info about the response too. We don't duplicate info across these events since they can be linked together with a
+RequestID.
 
 ## Author ##
 
