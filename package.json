@@ -1,6 +1,6 @@
 {
   "name": "logfmtr",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Logger like bole but formats like logfmt.",
   "main": "index.js",
   "scripts": {
