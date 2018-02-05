@@ -12,13 +12,15 @@ const onFinished = require('on-finished')
 
 // ----------------------------------------------------------------------------
 
-function getIp(req) {
-  return req.ip || req._logfmtr.remoteAddress || (req.connection && req.connection.remoteAddress) || null
+const NS_PER_SEC = 1e9
+
+function headersSent(res) {
+  return typeof res.headersSent !== 'boolean' ? Boolean(res._header) : res.headersSent
 }
 
-function recordTime(r) {
-  r._logfmtr.at   = process.hrtime()
-  r._logfmtr.time = new Date()
+function diffInNs(start) {
+  const diff = process.hrtime(start)
+  return diff[0] * NS_PER_SEC + diff[1]
 }
 
 function logger(req, res, next) {
@@ -33,26 +35,54 @@ function logger(req, res, next) {
   res._logfmtr = {}
 
   // set the start info and time
-  req._logfmtr.remoteAddress = getIp(req)
-  recordTime(req)
+  const start = process.hrtime()
+
+  // gather up some fields and replace the logger
+  const fields = {
+    ip            : req.ip || (req.connection && req.connection.remoteAddress) || '',
+    url           : req.originalUrl || req.url,
+    method        : req.method,
+    referrer      : req.headers['referer'] || req.headers['referrer'] || '',
+    'user-agent'  : req.headers['user-agent'] || '',
+  }
 
   // log now as the start of the request
-  req.log.info('req-start')
-
-  // log when request finished
-  onFinished(req, (err, _) => {
-    req.log.info('req-end')
-  })
+  req.log.withFields(fields).info('req-start')
 
   // record response start
   onHeaders(res, () => {
-    recordTime(res)
-    req.log.info('res-start')
+    const fields = {
+      diff : diffInNs(start),
+    }
+
+    // log the start of the response
+    req.log.withFields(fields).info('res-start')
   })
 
   // log when response has finished
   onFinished(res, (err, _) => {
-    req.log.info('res-end')
+    // gather up some info
+    const fields = {}
+
+    fields.diff = diffInNs(start)
+
+    // status code
+    if ( headersSent(res) ) {
+      fields.status = res.statusCode
+    }
+
+    // log the end of the response
+    req.log.withFields(fields).info('res-end')
+  })
+
+  // log when request finished
+  onFinished(req, (err, _) => {
+    const fields = {
+      diff : diffInNs(start),
+    }
+
+    // log the end of the request
+    req.log.withFields(fields).info('req-end')
   })
 
   next()
