@@ -144,22 +144,10 @@ LogFmtr.prototype.hostname = function pid() {
   return this.withFields({ hostname : os.hostname() })
 }
 
-// LogFmtr.prototype.output = function output(opts) {
-//   // check the level (if there)
-//   if ( opts.level ) {
-//     if ( valid.level[opts.level] ) {
-//       this.level = opts.level
-//     }
-//     else {
-//       throw new Error("logfmtr: Invalid logging level '" + opts.level + "'")
-//     }
-//   }
+// ----------------------------------------------------------------------------
 
-//   // check if the stream is provided
-//   if ( opts.stream ) {
-//     this.stream = opts.stream
-//   }
-// }
+// add the middleware on too
+LogFmtr.middleware = require('./middleware.js')
 
 // ----------------------------------------------------------------------------
 
