@@ -18,15 +18,13 @@ const valid = {
 const levels = 'debug info warn error'.split(' ')
 
 function escape(val) {
-  val = String(val).replace('\\', '\\\\').replace('\n', '\\n')
+  // replace backslash with `\\`, replace newline with `\n`, and double-quote with `\"`
+  val = String(val).replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/"/g, '\\"')
 
-  if ( val.indexOf(' ') === -1 ) {
-    // console.log('No space')
-  }
-  else {
-    // console.log('Got a space')
+  if ( val.indexOf(' ') >= 0 || val.indexOf('"') >= 0 ) {
     val = '"' + val + '"'
   }
+  // else, no quotes needed
 
   return val
 }
