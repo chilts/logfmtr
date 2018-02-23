@@ -24,6 +24,10 @@ level=info ts=1519382949791 port=3000 evt=server-started
 
 This allows you to parse your structured logs properly for the required info, rather than parsing your text.
 
+This package is also opininated that you should only ever log each event to one place. In general, that should be
+`process.stdout` or `process.sstderr`. You may choose to create a logger for each, but you don't configure each log to
+go to multiple outputs.
+
 ## Synopsis ##
 
 ```js
@@ -146,6 +150,30 @@ Just remember that there are a few ways for fields to appear in a log line, so i
 7. Express middleware logs various fields such as `ip`, `url`, `method`, `referrer`, `user-agent`, and `http-version`
 
 If you have duplicates, make sure to check each of these places.
+
+## Multiple Loggers - Logging to `stdout` and `stderr` ##
+
+In general you log each event to one output only. To log to multiple places you need to create multiple loggers. There
+is no way to configure the loggers so that the same event goes to multiple outputs. (You can also create two loggers to
+go to the same output, but that's up to you.)
+
+Logging to `stdout` and `stderr` is pretty easy:
+
+```
+// stdout - the follow two lines are equivalent
+const logStdOut = new LogFmtr()
+const logStdOut = new LogFmtr({ stream : process.stdout })
+
+logStdOut.info('Hello, StdOut!')
+
+// stderr
+const logStdErr = new LogFmtr({ stream : process.stdout })
+
+logStdErr.info('Hello, StdErr!')
+```
+
+You may, for example, log web requests to `stdout`, but all other diagnostic info to `stderr`. Make sure to use the
+same RequestID in each place so you can correlate information at a later date.
 
 ## Author ##
 
