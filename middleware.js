@@ -18,6 +18,20 @@ function headersSent(res) {
   return typeof res.headersSent !== 'boolean' ? Boolean(res._header) : res.headersSent
 }
 
+function getReqHeader(req, res, field) {
+  const header = req.headers[field.toLowerCase()]
+  return Array.isArray(header) ? header.join(', ') : header
+}
+
+function getResHeader(req, res, field) {
+  if ( !headersSent(res) ) {
+    return null
+  }
+
+  const header = res.getHeader(field)
+  return Array.isArray(header) ? header.join(', ') : header
+}
+
 function diffInNs(start) {
   const diff = process.hrtime(start)
   return diff[0] * NS_PER_SEC + diff[1]
@@ -39,11 +53,12 @@ function logger(req, res, next) {
 
   // gather up some fields and replace the logger
   const fields = {
-    ip            : req.ip || (req.connection && req.connection.remoteAddress) || '',
-    url           : req.originalUrl || req.url,
-    method        : req.method,
-    referrer      : req.headers['referer'] || req.headers['referrer'] || '',
-    'user-agent'  : req.headers['user-agent'] || '',
+    ip             : req.ip || (req.connection && req.connection.remoteAddress) || '',
+    url            : req.originalUrl || req.url,
+    method         : req.method,
+    referrer       : req.headers['referer'] || req.headers['referrer'] || '',
+    'user-agent'   : req.headers['user-agent'] || '',
+    'http-version' : req.httpVersionMajor + '.' + req.httpVersionMinor,
   }
 
   // log now as the start of the request
@@ -62,7 +77,9 @@ function logger(req, res, next) {
   // log when response has finished
   onFinished(res, (err, _) => {
     // gather up some info
-    const fields = {}
+    const fields = {
+      size : getResHeader(req, res, 'content-length'),
+    }
 
     fields.diff = diffInNs(start)
 
