@@ -1,24 +1,28 @@
 # logfmtr #
 
-Logger like `bole` but formats like `logfmt`. Comes with `express` middleware that works like `morgan`.
+Structured logger. Works like `bole`. Formats like `logfmt`. Comes with `express` middleware that works like `morgan`.
 
 Only needs two small dependencies (`on-headers` and `on-finished`) when using the Express middleware logger.
 
 ## Why? ##
 
-Teaches you to just log events, rather than infomation. Easy to use, easy to extend with your own fields.
+Teaches you to just log events, rather than text. Easy to use, easy to extend with your own fields.
 
-e.g. instead of `console.log('Listening on port %s', 3000)` you would instead log:
+e.g. instead of `console.log('Program Started')` and `console.log('Listening on port %s', 3000)` you would instead log:
 
 ```
-log.withFields({ port : 3000 }).info('server-started')
-
-// or (coming soon)
-
+log.info('started')
 log.info({ port : 3000 }, 'server-started')
 ```
 
-This allows you to parse your logs properly for the required info, rather than parsing your messages.
+The above code logs the following two lines:
+
+```
+level=info ts=1519382949789 evt=started
+level=info ts=1519382949791 port=3000 evt=server-started
+```
+
+This allows you to parse your structured logs properly for the required info, rather than parsing your text.
 
 ## Synopsis ##
 
@@ -28,8 +32,8 @@ const LogFmtr = require('logfmtr')
 // defaults to `process.stdout`
 const log = new LogFmtr()
 
-log.info('start')
-// level=info ts=1516739804842 evt=start
+log.info('started')
+// level=info ts=1516739804842 evt=started
 
 // log with different levels
 log.debug('1') // level=debug ts=1516740015113 evt=1
@@ -43,7 +47,9 @@ newLog.log('something-happened')
 // level=info ts=1516740100839 pid=16095 hostname=ryloth evt=something-happened
 ```
 
-You can also add fields to be logged every time, such as a RequestID (also see below for Express middleware):
+## `.withFields()` ##
+
+Works like `bole`. You can also add fields to be logged every time, such as a RequestID (also see below for Express middleware):
 
 ```
 // create a new logger with extra fields
@@ -56,9 +62,9 @@ That's pretty much it.
 
 ## Express Middleware ##
 
-Works like `morgan`, however this is fully integrated into a logger that you add to the incoming request.
-
-See the `examples/express.js` for more details.
+Works like `morgan`, however this is fully integrated into a logger that you add to the incoming request. It also logs
+the four main events of each request: request start, request end, response start, and response end. It doesn't pretty print
+timings but instead gives you the raw values (in nano-seconds!).
 
 Essentially you create a new logger (perhaps based on the top-level one), and optionally add a RequestID or any other
 fields you always want to log during the request lifecycle:
@@ -92,16 +98,54 @@ app.use((req, res, next) => {
 We log 4 events for you: Request Start, Response Start, Response End, Request End. This gives you fine grained info
 about exactly what is happening in your application. The Request Start logs info about the request. The Response Start
 logs info about the response too. We don't duplicate info across these events since they can be linked together with a
-RequestID.
+RequestID. `morgan` only logs once on request OR response.
 
-And finally, to use your own logger for events, use `req.log` as you would normally use a logger:
+And finally, to log your own events during the request, just use `req.log` as a regular `LogFmtr` logger:
 
 ```
-app.get((req, res) => {
+app.get('/', (req, res) => {
   req.log('homepage')
   res.send('Hello, World!\n')
 })
 ```
+
+Or perhaps log the start and end of a file upload:
+
+```
+app.get(
+  '/upload',
+  (req, res, next) => {
+    // middleware to upload a file to Object Storage somewhere
+    req.log('upload-start')
+    // some async action
+    req.log(upload-complete')
+  },
+  (req, res) => {
+    res.send('Thanks.\n')
+  }
+)
+```
+
+See the `examples/express.js` for a complete example.
+
+## Duplicate Field Names ##
+
+`logfmtr` doesn't do anything to explicitly disallow duplicate field names appearing in a single log line. There are a few reasons why:
+
+1. no data loss : we don't really want to throw an error if there is a duplicate field, better to log it anyway so you don't lose any data
+2. speed : by not keeping a check on field names, we can just log things as soon as they appear so we can stay fast and nimble
+
+Just remember that there are a few ways for fields to appear in a log line, so if you have duplicates you'll need to check in these places:
+
+1. log `level` (so you shouldn't ever log a field called `level`)
+2. `ts` if you have enabled timestamps
+3. either `.pid()` or `.hostname()` (don't log `pid` or `hostname`)
+4. any fields you've added to the logger using `.withFields()`
+5. any fields you log directly with the log level functions (such as `log.info()`)
+6. `evt` which comes from the log level functions like `log.info()` (never log a field called `evt`)
+7. Express middleware logs various fields such as `ip`, `url`, `method`, `referrer`, `user-agent`, and `http-version`
+
+If you have duplicates, make sure to check each of these places.
 
 ## Author ##
 

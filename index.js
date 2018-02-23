@@ -44,27 +44,32 @@ function LogFmtr(opts) {
   this.fields = {}
 }
 
-LogFmtr.prototype.debug = function debug(evt) {
-  this.logit('debug', evt)
+LogFmtr.prototype.debug = function debug(obj, evt) {
+  this.logit('debug', obj, evt)
 }
 
-LogFmtr.prototype.info = function info(evt) {
-  this.logit('info', evt)
+LogFmtr.prototype.info = function info(obj, evt) {
+  this.logit('info', obj, evt)
 }
 
-LogFmtr.prototype.log = function log(evt) {
-  this.logit('info', evt)
+LogFmtr.prototype.log = function log(obj, evt) {
+  this.logit('info', obj, evt)
 }
 
-LogFmtr.prototype.warn = function warn(evt) {
-  this.logit('warn', evt)
+LogFmtr.prototype.warn = function warn(obj, evt) {
+  this.logit('warn', obj, evt)
 }
 
-LogFmtr.prototype.error = function error(evt) {
-  this.logit('error', evt)
+LogFmtr.prototype.error = function error(obj, evt) {
+  this.logit('error', obj, evt)
 }
 
-LogFmtr.prototype.logit = function logit(lvl, evt) {
+LogFmtr.prototype.logit = function logit(lvl, obj, evt) {
+  if (!evt) {
+    evt = obj
+    obj = undefined
+  }
+
   let m = 'level=' + lvl
 
   if ( this.opts.ts ) {
@@ -74,6 +79,13 @@ LogFmtr.prototype.logit = function logit(lvl, evt) {
   // for each field
   for ( let f in this.fields ) {
     m += ' ' + f + '=' + escape(this.fields[f])
+  }
+
+  // for each key in the obj
+  if ( obj ) {
+    for ( let f in obj ) {
+      m += ' ' + f + '=' + escape(obj[f])
+    }
   }
 
   m += ' evt=' + escape(evt) + '\n'

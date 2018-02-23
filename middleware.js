@@ -39,7 +39,7 @@ function diffInNs(start) {
 
 function logger(req, res, next) {
   if ( !req.log ) {
-    console.warn('lgfmtr.middleware() - there is no logger on this request')
+    console.warn('logfmtr: there is no logger on this request, add one to `req.log`.')
     next()
     return
   }
