@@ -22,6 +22,18 @@ function escape(val) {
     return ''
   }
 
+  // In general we can just return the val, but we actually want to escape various things
+  // where necessary. In general we want to use the same escaping as `JSON.stringify(str)`
+  // but only include the double-quotes if necessary. ie. where the string contains at least
+  // a space or a double-quote itself.
+
+  // The one time this won't apply is if we actually have an object or array to output.
+  // In that case we should just output JSON for it, hence it won't start with double-quotes
+  // but will (probably) have double-quotes in the value.
+  if ( typeof val === 'object' ) {
+    return '=' + JSON.stringify(val)
+  }
+
   // replace backslash with `\\`, replace newline with `\n`, and double-quote with `\"`
   val = String(val).replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/"/g, '\\"')
 
