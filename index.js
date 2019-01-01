@@ -52,7 +52,7 @@ function LogFmtr(opts) {
 
   opts.name = opts.name || 'default'
   opts.stream = opts.stream || process.stdout
-  opts.ts = opts.ts || true
+  opts.ts = 'ts' in opts ? Boolean(opts.ts) : true
 
   this.opts = opts
 
