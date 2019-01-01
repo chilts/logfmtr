@@ -16,16 +16,21 @@ const valid = {
 }
 const levels = 'debug info warn error'.split(' ')
 
+// does the escape and includes the equals if necessary
 function escape(val) {
+  if ( val === null ) {
+    return ''
+  }
+
   // replace backslash with `\\`, replace newline with `\n`, and double-quote with `\"`
   val = String(val).replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/"/g, '\\"')
 
-  if ( val.indexOf(' ') >= 0 || val.indexOf('"') >= 0 ) {
+  if ( val.indexOf(' ') >= 0 ) {
     val = '"' + val + '"'
   }
   // else, no quotes needed
 
-  return val
+  return '=' + val
 }
 
 // ----------------------------------------------------------------------------
@@ -64,12 +69,8 @@ LogFmtr.prototype.error = function error(obj, evt) {
   this.logit('error', obj, evt)
 }
 
-LogFmtr.prototype.logit = function logit(lvl, obj, evt) {
-  if (!evt) {
-    evt = obj
-    obj = undefined
-  }
-
+// internal method - doesn't check `(lvl, obj, evt)`, but assumes they are all correct.
+LogFmtr.prototype._fmt = function(lvl, obj, evt) {
   let m = 'level=' + lvl
 
   if ( this.opts.ts ) {
@@ -78,19 +79,34 @@ LogFmtr.prototype.logit = function logit(lvl, obj, evt) {
 
   // for each field
   for ( let f in this.fields ) {
-    m += ' ' + f + '=' + escape(this.fields[f])
+    m += ' ' + f + escape(this.fields[f])
   }
 
   // for each key in the obj
   if ( obj ) {
     for ( let f in obj ) {
-      m += ' ' + f + '=' + escape(obj[f])
+      m += ' ' + f + escape(obj[f])
     }
   }
 
-  m += ' evt=' + escape(evt) + '\n'
+  m += ' evt' + escape(evt) + '\n'
 
-  this.opts.stream.write(m)
+  return m
+}
+
+LogFmtr.prototype.logit = function logit(lvl, obj, evt) {
+  if (!evt) {
+    evt = obj
+    obj = undefined
+  }
+
+  if (!evt) {
+    throw new Error("LogFmtr: `evt` should be provided")
+  }
+
+  // format the output line and write it out
+  const line = this._fmt(lvl, obj, evt)
+  this.opts.stream.write(line)
 }
 
 LogFmtr.prototype.withFields = function withFields(fields) {
