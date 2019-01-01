@@ -24,4 +24,20 @@ app.get('/', (req, res) => {
   }, Math.random() * 1000)
 })
 
+app.get('/redirect', (req, res) => {
+  res.status(302).location('/').send('')
+})
+
+app.get('/redirect1', (req, res) => {
+  res.redirect(302, '/')
+})
+
+app.get('/redirect2', (req, res) => {
+  res.redirect(301, '/')
+})
+
+app.get('/redirect3', (req, res) => {
+  res.redirect(307, '/')
+})
+
 app.listen(3000, () => log.withFields({ port : 3000 }).info('server-listening'))
