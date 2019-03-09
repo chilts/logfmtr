@@ -151,7 +151,7 @@ function defaultLog() {
   defLog = new LogFmtr()
   return defLog
 }
-LogFmtr.defaultLog = defaultLog
+LogFmtr.default = defaultLog
 
 // ----------------------------------------------------------------------------
 

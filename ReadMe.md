@@ -185,13 +185,13 @@ call `LogFmtr.default()` to obtain it. It is equivalent to `new LogFmtr()` (thou
 const LogFmtr = require('logfmtr')
 
 // create and return a default log
-const log1 = LogFmtr.defaultLog()
+const log1 = LogFmtr.default()
 
 // this just returns the above logger since one has already been created
-const log2 = LogFmtr.defaultLog()
+const log2 = LogFmtr.default()
 
 // in another file somewhere, returns the same logger as above
-const log3 = require('logfmtr').defaultLog()
+const log3 = require('logfmtr').default()
 ```
 
 ## Author ##
