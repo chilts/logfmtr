@@ -96,3 +96,19 @@ test('Test LogFmtr._fmt() with ts // internal method', (t) => {
 
   t.end()
 })
+
+test('Get a default logger', (t) => {
+  t.plan(3)
+
+  const log1 = LogFmtr.defaultLog()
+  const log2 = LogFmtr.defaultLog()
+
+  t.equal(log1, log2, 'log1 and log2 are the same')
+
+  const log3 = new LogFmtr()
+
+  t.notEqual(log1, log3, 'log1 and log3 are different')
+  t.notEqual(log2, log3, 'log2 and log3 are different')
+
+  t.end()
+})

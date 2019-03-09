@@ -175,6 +175,25 @@ logStdErr.info('Hello, StdErr!')
 You may, for example, log web requests to `stdout`, but all other diagnostic info to `stderr`. Make sure to use the
 same RequestID in each place so you can correlate information at a later date.
 
+## Default Logger ##
+
+Just to make the simplest case easier (and be able to provide the same `log` to every part of your program. you can
+call `LogFmtr.default()` to obtain it. It is equivalent to `new LogFmtr()` (though perhaps it should also take an
+`opts` object - let me know):
+
+```
+const LogFmtr = require('logfmtr')
+
+// create and return a default log
+const log1 = LogFmtr.defaultLog()
+
+// this just returns the above logger since one has already been created
+const log2 = LogFmtr.defaultLog()
+
+// in another file somewhere, returns the same logger as above
+const log3 = require('logfmtr').defaultLog()
+```
+
 ## Author ##
 
 Andrew Chilton.

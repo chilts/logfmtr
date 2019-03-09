@@ -140,8 +140,18 @@ LogFmtr.prototype.hostname = function pid() {
 
 // ----------------------------------------------------------------------------
 
-// add the middleware on too
+// add the middleware
+LogFmtr.parse = require('./parse.js')
 LogFmtr.middleware = require('./middleware.js')
+
+// setup a default logger if the user wants one
+let defLog = null
+function defaultLog() {
+  if (defLog) return defLog
+  defLog = new LogFmtr()
+  return defLog
+}
+LogFmtr.defaultLog = defaultLog
 
 // ----------------------------------------------------------------------------
 
