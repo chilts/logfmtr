@@ -16,10 +16,10 @@
   },
   "dependencies": {
     "on-finished": "^2.3.0",
-    "on-headers": "^1.0.1"
+    "on-headers": "^1.0.2"
   },
   "devDependencies": {
-    "tape": "^4.8.0"
+    "tape": "^4.10.1"
   },
   "author": "Andrew Chilton (https://chilts.org/) @andychilton",
   "keywords": [
