@@ -110,5 +110,83 @@ test('Get a default logger', (t) => {
   t.notEqual(log1, log3, 'log1 and log3 are different')
   t.notEqual(log2, log3, 'log2 and log3 are different')
 
+  LogFmtr.clearLog_DO_NOT_USE_THIS_IS_ONLY_FOR_TESTS()
+
+  t.end()
+})
+
+test('Get a default logger with opts', (t) => {
+  t.plan(8)
+
+  let log = null
+
+  // each test creates a new logger with options, but the 2nd call ignores the `opts`
+
+  log = LogFmtr.default()
+  t.equal(log._fmt('log', {}, 'ok'), 'level=log evt=ok\n', 'Default log looks okay - 1')
+  LogFmtr.default()
+  t.equal(log._fmt('log', {}, 'ok'), 'level=log evt=ok\n', 'Default log looks okay - 2')
+  LogFmtr.clearLog_DO_NOT_USE_THIS_IS_ONLY_FOR_TESTS()
+
+  log = LogFmtr.default({ pid: true })
+  t.equal(log._fmt('log', {}, 'ok').replace(/pid=\d+/, '{}'), 'level=log {} evt=ok\n', 'Default log with PID - 1')
+  LogFmtr.default()
+  t.equal(log._fmt('log', {}, 'ok').replace(/pid=\d+/, '{}'), 'level=log {} evt=ok\n', 'Default log with PID - 2')
+  LogFmtr.clearLog_DO_NOT_USE_THIS_IS_ONLY_FOR_TESTS()
+
+  log = LogFmtr.default({ hostname: true })
+  t.equal(log._fmt('log', {}, 'ok').replace(/hostname=\w+/, '{}'), 'level=log {} evt=ok\n', 'Default log with Hostname - 3')
+  LogFmtr.default()
+  t.equal(log._fmt('log', {}, 'ok').replace(/hostname=\w+/, '{}'), 'level=log {} evt=ok\n', 'Default log with Hostname - 3')
+  LogFmtr.clearLog_DO_NOT_USE_THIS_IS_ONLY_FOR_TESTS()
+
+  log = LogFmtr.default({ ts: true })
+  t.equal(log._fmt('log', {}, 'ok').replace(/ts=\d+/, '{}'), 'level=log {} evt=ok\n', 'Default log with Timestamp - 4')
+  LogFmtr.default()
+  t.equal(log._fmt('log', {}, 'ok').replace(/ts=\d+/, '{}'), 'level=log {} evt=ok\n', 'Default log with Timestamp - 4')
+  LogFmtr.clearLog_DO_NOT_USE_THIS_IS_ONLY_FOR_TESTS()
+
+  t.end()
+})
+
+test('Get a default logger with fields', (t) => {
+  t.plan(4)
+
+  let log = null
+
+  // each test creates a new logger with options, but the 2nd call ignores the `opts`
+
+  log = LogFmtr.default({}, { rid: 1 })
+  t.equal(log._fmt('log', {}, 'ok'), 'level=log rid=1 evt=ok\n', 'Default log looks okay - 1')
+  LogFmtr.default()
+  t.equal(log._fmt('log', {}, 'ok'), 'level=log rid=1 evt=ok\n', 'Default log looks okay - 2')
+  LogFmtr.clearLog_DO_NOT_USE_THIS_IS_ONLY_FOR_TESTS()
+
+  log = LogFmtr.default({ ts: true, pid: true, hostname: true }, { rid: 2 })
+  const line1 = log._fmt('log', {}, 'ok')
+    .replace(/pid=\d+/, '{pid}')
+    .replace(/hostname=\w+/, '{hostname}')
+    .replace(/ts=\d+/, '{ts}')
+  t.equal(line1, 'level=log {ts} {pid} {hostname} rid=2 evt=ok\n', 'Default log with PID - 1')
+  LogFmtr.default()
+  const line2 = log._fmt('log', {}, 'ok')
+    .replace(/pid=\d+/, '{pid}')
+    .replace(/hostname=\w+/, '{hostname}')
+    .replace(/ts=\d+/, '{ts}')
+  t.equal(line2, 'level=log {ts} {pid} {hostname} rid=2 evt=ok\n', 'Default log with PID - 2')
+  LogFmtr.clearLog_DO_NOT_USE_THIS_IS_ONLY_FOR_TESTS()
+
+  // log = LogFmtr.default({ hostname: true })
+  // t.equal(log._fmt('log', {}, 'ok').replace(/hostname=\w+/, '{}'), 'level=log {} evt=ok\n', 'Default log with Hostname - 3')
+  // LogFmtr.default()
+  // t.equal(log._fmt('log', {}, 'ok').replace(/hostname=\w+/, '{}'), 'level=log {} evt=ok\n', 'Default log with Hostname - 3')
+  // LogFmtr.clearLog_DO_NOT_USE_THIS_IS_ONLY_FOR_TESTS()
+
+  // log = LogFmtr.default({ ts: true })
+  // t.equal(log._fmt('log', {}, 'ok').replace(/ts=\d+/, '{}'), 'level=log {} evt=ok\n', 'Default log with Timestamp - 4')
+  // LogFmtr.default()
+  // t.equal(log._fmt('log', {}, 'ok').replace(/ts=\d+/, '{}'), 'level=log {} evt=ok\n', 'Default log with Timestamp - 4')
+  // LogFmtr.clearLog_DO_NOT_USE_THIS_IS_ONLY_FOR_TESTS()
+
   t.end()
 })

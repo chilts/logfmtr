@@ -47,17 +47,14 @@ function escape(val) {
 
 // ----------------------------------------------------------------------------
 
-function LogFmtr(opts) {
-  opts = opts || {}
-
-  opts.name = opts.name || 'default'
+function LogFmtr(opts = {}) {
+  // opts.name = opts.name || 'default'
   opts.stream = opts.stream || process.stdout
-  opts.ts = 'ts' in opts ? Boolean(opts.ts) : true
+  opts.ts = 'ts' in opts ? Boolean(opts.ts) : false
 
   this.opts = opts
 
-  // and start off the message prefix
-  this.prefix = ''
+  // remember any fields for this instance
   this.fields = {}
 }
 
@@ -146,12 +143,26 @@ LogFmtr.middleware = require('./middleware.js')
 
 // setup a default logger if the user wants one
 let defLog = null
-function defaultLog() {
+function defaultLog(opts = {}, fields) {
   if (defLog) return defLog
-  defLog = new LogFmtr()
+  defLog = new LogFmtr(opts)
+  if (opts.pid) {
+    defLog = defLog.pid()
+  }
+  if (opts.hostname) {
+    defLog = defLog.hostname()
+  }
+  if (fields) {
+    defLog = defLog.withFields(fields)
+  }
   return defLog
 }
 LogFmtr.default = defaultLog
+
+function clearLog() {
+  defLog = null
+}
+LogFmtr.clearLog_DO_NOT_USE_THIS_IS_ONLY_FOR_TESTS = clearLog
 
 // ----------------------------------------------------------------------------
 

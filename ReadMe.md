@@ -167,7 +167,7 @@ const logStdOut = new LogFmtr({ stream : process.stdout })
 logStdOut.info('Hello, StdOut!')
 
 // stderr
-const logStdErr = new LogFmtr({ stream : process.stdout })
+const logStdErr = new LogFmtr({ stream : process.stderr })
 
 logStdErr.info('Hello, StdErr!')
 ```
@@ -178,8 +178,8 @@ same RequestID in each place so you can correlate information at a later date.
 ## Default Logger ##
 
 Just to make the simplest case easier (and be able to provide the same `log` to every part of your program. you can
-call `LogFmtr.default()` to obtain it. It is equivalent to `new LogFmtr()` (though perhaps it should also take an
-`opts` object - let me know):
+call `LogFmtr.default()` to obtain it. It is roughly equivalent to `new LogFmtr()` (the only difference is that if you
+want the `.pid()` or `.hostname()` you pass those as boolean options - see below).
 
 ```
 const LogFmtr = require('logfmtr')
@@ -192,6 +192,26 @@ const log2 = LogFmtr.default()
 
 // in another file somewhere, returns the same logger as above
 const log3 = require('logfmtr').default()
+```
+
+### opts ###
+
+You can also pass an `opts` object into `.default()`. Any subsequent call will ignore opts.
+
+```
+const log1 = LogFmtr.default({ ts: true })
+const log2 = LogFmtr.default({ pid: true })
+const log3 = LogFmtr.default({ hostname: true})
+const log4 = LogFmtr.default({ ts: true, pid: true, hostname: true }) // any combination
+const log5 = LogFmtr.default({ stream: process.stderr }) // and stream too
+```
+
+### fields ###
+
+You can also pass a `fields` object too, as the second argument (the first can't be omitted, so just pass `{}`).
+
+```
+const log1 = LogFmtr.default({ ts: true }, { request_id: 123 })
 ```
 
 ## Author ##
