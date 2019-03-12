@@ -88,6 +88,19 @@ test('Test LogFmtr._fmt() for escaping // internal method', (t) => {
   t.end()
 })
 
+test('Test LogFmtr._fmt() for Objects and Arrays', (t) => {
+  t.plan(2)
+
+  const obj = { a: 1, b: "Hello, World!", c: true }
+  const arr = [ 1, "Hello, World!", true ]
+
+  const logPlain = new LogFmtr()
+  t.equal(logPlain._fmt('info', { obj }, 'ok'), 'level=info obj={"a":1,"b":"Hello, World!","c":true} evt=ok\n', 'Simple object JSON')
+  t.equal(logPlain._fmt('info', { arr }, 'ok'), 'level=info arr=[1,"Hello, World!",true] evt=ok\n', 'Simple Array JSON')
+
+  t.end()
+})
+
 test('Test LogFmtr._fmt() with ts // internal method', (t) => {
   t.plan(1)
 
