@@ -1,6 +1,6 @@
 {
   "name": "logfmtr",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "Structured logger. Works like `bole`. Formats like `logfmt`. Comes with `express` middleware that works like `morgan`.",
   "main": "index.js",
   "scripts": {
