@@ -178,8 +178,8 @@ same RequestID in each place so you can correlate information at a later date.
 ## Default Logger ##
 
 Just to make the simplest case easier (and be able to provide the same `log` to every part of your program. you can
-call `LogFmtr.default()` to obtain it. It is roughly equivalent to `new LogFmtr()` (the only difference is that if you
-want the `.pid()` or `.hostname()` you pass those as boolean options - see below).
+call `LogFmtr.default(opts, fields)` to obtain it. It is roughly equivalent to `new LogFmtr()` (the only difference is
+that if you want the `.pid()` or `.hostname()` you pass those as boolean options in `opts` - see below).
 
 ```
 const LogFmtr = require('logfmtr')
@@ -194,11 +194,22 @@ const log2 = LogFmtr.default()
 const log3 = require('logfmtr').default()
 ```
 
-### opts ###
-
-You can also pass an `opts` object into `.default()`. Any subsequent call will ignore opts.
+Anywhere else in your program you call `.default()` you'll be given the exact same logger as the first one created and
+both `opts` and `fields` will be ignored:
 
 ```
+const log = LogFmtr.default()
+```
+
+We recommend setting up your default logger early in your main program file so that all other required packages using
+it will receive the logger as you intended.
+
+### opts ###
+
+You can also pass an `opts` object into `.default()`. Any subsequent call to `.default()` will ignore opts.
+
+```
+// Examples
 const log1 = LogFmtr.default({ ts: true })
 const log2 = LogFmtr.default({ pid: true })
 const log3 = LogFmtr.default({ hostname: true})
@@ -211,7 +222,10 @@ const log5 = LogFmtr.default({ stream: process.stderr }) // and stream too
 You can also pass a `fields` object too, as the second argument (the first can't be omitted, so just pass `{}`).
 
 ```
-const log1 = LogFmtr.default({ ts: true }, { request_id: 123 })
+// Examples
+const log1 = LogFmtr.default({ ts: true }, { program: 'worker' })
+const log2 = LogFmtr.default({}, { program: 'worker' })
+const log3 = LogFmtr.default({}, { program: 'worker', env: 'staging' })
 ```
 
 ## Examples ##
