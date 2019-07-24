@@ -214,6 +214,17 @@ You can also pass a `fields` object too, as the second argument (the first can't
 const log1 = LogFmtr.default({ ts: true }, { request_id: 123 })
 ```
 
+## Examples ##
+
+On a Heroku dyno (web or worker) you wouldn't need the timestamp since their logging infrastructure gives you that
+already.
+
+```
+const log = new LogFmtr()
+log.info('This is the message.')
+// level=info evt="This is the message."
+```
+
 ## Author ##
 
 ```
