@@ -25,7 +25,7 @@ level=info ts=1519382949791 port=3000 evt=server-started
 This allows you to parse your structured logs properly for the required info, rather than parsing your text.
 
 This package is also opininated that you should only ever log each event to one place. In general, that should be
-`process.stdout` or `process.sstderr`. You may choose to create a logger for each, but you don't configure each log to
+`process.stdout` or `process.stderr`. You may choose to create a logger for each, but you don't configure each log to
 go to multiple outputs.
 
 ## Synopsis ##
